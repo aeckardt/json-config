@@ -4,7 +4,7 @@
 #include <QJsonArray>
 #include <QJsonValue>
 
-#include "jsontree.h"
+#include "jsontreeitem.h"
 
 JsonTreeItem::JsonTreeItem()
     : m_type(None),
@@ -84,19 +84,19 @@ void JsonTreeItem::clear()
     switch (m_type)
     {
     case Value:
-        // data ist ein Zeiger auf QVariant
+        // m_data is a pointer to a QVariant object
         freeData<Value>();
         break;
     case Object:
-        // Lösche alle Kindknoten, bevor der Vector gelöscht wird
+        // Delete all child nodes, before deleting the QVector pointer
         qDeleteAll(asType<Object>());
-        // data ist ein Zeiger auf QVector<ConfigTree *>
+        // m_data is a pointer to a QVector<ConfigTree *> object
         freeData<Object>();
         break;
     case Array:
-        // Lösche alle Kindknoten, bevor der Vector gelöscht wird
+        // Delete all child nodes, before deleting the QVector pointer
         qDeleteAll(asType<Array>());
-        // data ist ein Zeiger auf QVector<ConfigTree *>
+        // m_data is a pointer to a QVector<ConfigTree *> object
         freeData<Array>();
         break;
     default:
@@ -244,15 +244,15 @@ void JsonTreeItem::import(const QJsonValue &val)
 void JsonTreeItem::append(const QJsonObject &obj)
 {
     if (m_type != Object)
-        // Wenn das Element schon mit einem anderen Typ existiert hat, überschreibe es
+        // If the element alreadys exists with a different type, overwrite it
         allocData<Object>();
 
     const QStringList objKeys = obj.keys();
     for (const QString &key : objKeys) {
-        // Prüfe, ob der Schlüssel schon existiert
+        // Check, if the key already exists
         JsonTreeItem *ct = find(key);
         if (!ct) {
-            // Wenn der Schlüssel nicht existiert, lege einen neuen an
+            // If the key doesn't exists, create a new one
             ct = newItem();
             ct->m_key = key;
             asType<Object>().push_back(ct);
@@ -264,7 +264,7 @@ void JsonTreeItem::append(const QJsonObject &obj)
 void JsonTreeItem::append(const QJsonArray &arr)
 {
     if (m_type != Array)
-        // Wenn das Element schon mit einem anderen Typ existiert hat, überschreibe es
+        // If the element alreadys exists with a different type, overwrite it
         allocData<Array>();
 
     for (const QJsonValue &val : arr) {
@@ -278,7 +278,7 @@ void JsonTreeItem::append(const QJsonArray &arr)
 void JsonTreeItem::append(const QJsonValue &val)
 {
     if (val.isString() || val.isDouble() || val.isBool() || val.isNull() || val.isUndefined()) {
-        // Überschreibe Wert, falls schon vorhanden
+        // Overwrite value, if already exists
         allocData<Value>();
         if (val.isString() || val.isDouble() || val.isBool())
             asType<Value>() = val.toVariant();

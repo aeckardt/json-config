@@ -4,7 +4,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
-#include "config.h"
+#include "configitem.h"
 
 ConfigItem::ConfigItem()
     : JsonTreeItem(),
@@ -18,15 +18,15 @@ void ConfigItem::clearExtended()
     switch (m_extendedType)
     {
     case StringMap:
-        // m_extendedData ist ein Zeiger auf QMap<QString, QString>
+        // m_extendedData is a pointer to a QMap<QString, QString> object
         freeExtendedData<StringMap>();
         break;
     case StringList:
-        // m_extendedData ist ein Zeiger auf QStringList
+        // m_extendedData is a pointer to a QStringList object
         freeExtendedData<StringList>();
         break;
     case IntList:
-        // m_extendedData ist ein Zeiger auf QList<int>
+        // m_extendedData is a pointer to a QList<int> object
         freeExtendedData<IntList>();
         break;
     default:

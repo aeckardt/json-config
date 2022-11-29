@@ -1,25 +1,22 @@
 #ifndef CONFIGITEM_H
 #define CONFIGITEM_H
 
-#include "jsontree.h"
+#include "jsontreeitem.h"
 
 namespace ConfigItemData {
 
-// Definiere verfügbare Key-Datenwerte
+// Define available key datatypes
 enum Type {
     None,
-    StringMap,  // Spezialtyp von Object, wo alle Werte Strings sind
-                // Der Vorteil dieser Differenzierung ist, dass die
-                // Werte als Referenz editiert werden können!
-    StringList, // Spezialtyp von Array, wo alle Werte Strings sind
-                // Der Vorteil der Benutzung ist analog zu StringMap!
+    StringMap,  
+    StringList, 
     IntList
 };
 
 template<Type>
 struct TypeTraits;
 
-// Definiere TypeTraits für Datentypen
+// Define type traits for data types
 template<> struct TypeTraits<StringMap> {
     using Type = QMap<QString, QString>;
     static constexpr JsonTreeItem::DataType ParentType = JsonTreeItem::Object;
@@ -37,7 +34,6 @@ template<> struct TypeTraits<IntList> {
 
 }
 
-// Definiere Klasse ConfigItem
 class ConfigItem : public JsonTreeItem
 {
 public:
@@ -63,17 +59,17 @@ public:
 
     void clearExtended();
 
-    // Lade und/oder manipuliere einfaches Dictionary
+    // Load and / or manipulate string to string dictionary
     QMap<QString, QString> &stringMap();
     QMap<QString, QString> &stringMap(const QString &key) { return itemAt(key)->stringMap(); }
     QMap<QString, QString> &stringMap(const QString &objPath, const QString &key) { return itemAt(objPath, key)->stringMap(); }
 
-    // Lade und/oder manipuliere QStringList Variable
+    // Load and / or manipulate string list
     QStringList &stringList();
     QStringList &stringList(const QString &key) { return itemAt(key)->stringList(); }
     QStringList &stringList(const QString &objPath, const QString &key) { return itemAt(objPath, key)->stringList(); }
 
-    // Lade und/oder manipuliere Integer Liste
+    // Load and / or manipulate int list
     QList<int> &intList();
     QList<int> &intList(const QString &key) { return itemAt(key)->intList(); }
     QList<int> &intList(const QString &objPath, const QString &key) { return itemAt(objPath, key)->intList(); }
@@ -93,8 +89,6 @@ private:
 
     void finalizeForExport() override;
 
-    // Funktionen zum Ansteuern (und Bearbeiten) von Werten im aktuellen Knoten
-    // Dass der Typ _T mit m_extendedType übereinstimmt wird beim Aufruf vorausgesetzt!
     template<ExtendedType _T>
     ValueType<_T> &asExtendedType()
     { return *static_cast<ValueType<_T> *>(m_extendedData); }
@@ -103,7 +97,7 @@ private:
     const ValueType<_T> &asExtendedType() const
     { return *static_cast<const ValueType<_T> *>(m_extendedData); }
 
-    // Allokiere Datenfeld mit gewähltem Typ
+    // Allocate datafield with selected type
     template<ExtendedType _T>
     void allocExtendedData()
     {
@@ -113,8 +107,7 @@ private:
         m_extendedData = new ValueType<_T>;
     }
 
-    // Lösche Daten mit gewähltem Typ
-    // Dass der Typ _T mit m_type übereinstimmt wird beim Aufruf vorausgesetzt!
+    // Delete data with selected type
     template<ExtendedType _T>
     void freeExtendedData()
     { delete static_cast<ValueType<_T> *>(m_extendedData); }

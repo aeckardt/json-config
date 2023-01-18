@@ -9,7 +9,7 @@ SRC_DIR = $$ROOT_DIR/src
 GTEST_SRCDIR = $$ROOT_DIR/googletest/googletest
 GMOCK_SRCDIR = $$ROOT_DIR/googletest/googlemock
 
-SOURCES += 
+SOURCES += \
     main.cpp \
     $$SRC_DIR/configitem.cpp \
     $$SRC_DIR/jsontreeitem.cpp \
